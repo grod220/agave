@@ -24,7 +24,7 @@ use {
         state::{StakeActivationStatus, StakeStateV2},
         sysvar::stake_history,
     },
-    solana_sysvar::{SysvarSerialize, clock},
+    solana_sysvar::clock,
     solana_transaction::Transaction,
     solana_transaction_error::TransactionError,
     solana_vote_program::vote_state::{self, BLS_PUBLIC_KEY_COMPRESSED_SIZE},
@@ -41,7 +41,11 @@ fn process_instruction(
 ) -> ProgramResult {
     let account_info_iter = &mut accounts.iter();
     let clock_info = next_account_info(account_info_iter)?;
-    let clock = &Clock::from_account_info(clock_info)?;
+    if !clock::check_id(clock_info.key) {
+        return Err(ProgramError::InvalidArgument);
+    }
+    let clock: Clock =
+        deserialize(&clock_info.data.borrow()).map_err(|_| ProgramError::InvalidArgument)?;
     let expected_slot = u64::from_le_bytes(input.try_into().unwrap());
     if clock.slot == expected_slot {
         Ok(())

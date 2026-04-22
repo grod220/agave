@@ -441,6 +441,7 @@ mod tests {
         solana_hash::Hash,
         solana_keypair::Keypair,
         solana_native_token::LAMPORTS_PER_SOL,
+        solana_program_runtime::sysvar_account,
         solana_rent::Rent,
         solana_reward_info::RewardType,
         solana_signer::Signer,
@@ -881,7 +882,7 @@ mod tests {
                     .get_account(&solana_sysvar::epoch_rewards::id())
                     .unwrap();
                 let epoch_rewards: solana_sysvar::epoch_rewards::EpochRewards =
-                    solana_account::from_account(&account).unwrap();
+                    sysvar_account::from_account(&account).unwrap();
                 assert_eq!(post_cap, pre_cap + epoch_rewards.distributed_rewards);
             } else {
                 // 2. when curr_slot == SLOTS_PER_EPOCH + 2, the 3rd block of
@@ -932,7 +933,7 @@ mod tests {
                 .get_account(&solana_sysvar::epoch_rewards::id())
                 .unwrap_or_default();
             let pre_epoch_rewards: solana_sysvar::epoch_rewards::EpochRewards =
-                solana_account::from_account(&pre_sysvar_account).unwrap_or_default();
+                sysvar_account::from_account(&pre_sysvar_account).unwrap_or_default();
             let pre_distributed_rewards = pre_epoch_rewards.distributed_rewards;
             let curr_bank = Bank::new_from_parent_with_bank_forks(
                 bank_forks.as_ref(),
@@ -975,7 +976,7 @@ mod tests {
                     .get_account(&solana_sysvar::epoch_rewards::id())
                     .unwrap();
                 let epoch_rewards: solana_sysvar::epoch_rewards::EpochRewards =
-                    solana_account::from_account(&account).unwrap();
+                    sysvar_account::from_account(&account).unwrap();
                 reward_distribution_completion_slot =
                     Some(SLOTS_PER_EPOCH + epoch_rewards.num_partitions);
             } else if slot
@@ -993,7 +994,7 @@ mod tests {
                     .get_account(&solana_sysvar::epoch_rewards::id())
                     .unwrap();
                 let epoch_rewards: solana_sysvar::epoch_rewards::EpochRewards =
-                    solana_account::from_account(&account).unwrap();
+                    sysvar_account::from_account(&account).unwrap();
                 assert_eq!(
                     post_cap,
                     pre_cap + epoch_rewards.distributed_rewards - pre_distributed_rewards
@@ -1030,7 +1031,7 @@ mod tests {
                     .get_account(&solana_sysvar::epoch_rewards::id())
                     .unwrap();
                 let epoch_rewards: solana_sysvar::epoch_rewards::EpochRewards =
-                    solana_account::from_account(&account).unwrap();
+                    sysvar_account::from_account(&account).unwrap();
                 assert_eq!(
                     post_cap,
                     pre_cap + epoch_rewards.distributed_rewards - pre_distributed_rewards
