@@ -2743,7 +2743,7 @@ mod tests {
             invoke_context::{BpfAllocator, InvokeContext},
             memory::address_is_aligned,
             memory_context::MemoryContext,
-            sysvar_account::{create_account_shared_data_for_test, sysvar_account_data_len},
+            sysvar_account::{SysvarAccountSize, create_account_shared_data_for_test},
             with_mock_invoke_context, with_mock_invoke_context_with_feature_set,
         },
         solana_sbpf::{
@@ -4227,7 +4227,7 @@ mod tests {
             let mut got_clock_obj = Clock::default();
             let got_clock_obj_va = 0x100000000;
 
-            let mut got_clock_buf = vec![0; sysvar_account_data_len(&Clock::default())];
+            let mut got_clock_buf = vec![0; Clock::SIZE];
             let got_clock_buf_va = 0x200000000;
             let clock_id_va = 0x300000000;
             let clock_id = Clock::id().to_bytes();
@@ -4266,7 +4266,7 @@ mod tests {
                 clock_id_va,
                 got_clock_buf_va,
                 0,
-                sysvar_account_data_len(&Clock::default()) as u64,
+                Clock::SIZE as u64,
                 0,
             );
             assert_eq!(result.unwrap(), 0);
@@ -4282,8 +4282,7 @@ mod tests {
             let mut got_epochschedule_obj = EpochSchedule::default();
             let got_epochschedule_obj_va = 0x100000000;
 
-            let mut got_epochschedule_buf =
-                vec![0; sysvar_account_data_len(&EpochSchedule::default())];
+            let mut got_epochschedule_buf = vec![0; EpochSchedule::SIZE];
             let got_epochschedule_buf_va = 0x200000000;
             let epochschedule_id_va = 0x300000000;
             let epochschedule_id = EpochSchedule::id().to_bytes();
@@ -4338,7 +4337,7 @@ mod tests {
                 epochschedule_id_va,
                 got_epochschedule_buf_va,
                 0,
-                sysvar_account_data_len(&EpochSchedule::default()) as u64,
+                EpochSchedule::SIZE as u64,
                 0,
             );
             assert_eq!(result.unwrap(), 0);
@@ -4388,7 +4387,7 @@ mod tests {
             let mut got_rent_obj = create_filled_type::<Rent>(true);
             let got_rent_obj_va = 0x100000000;
 
-            let mut got_rent_buf = vec![0; sysvar_account_data_len(&Rent::default())];
+            let mut got_rent_buf = vec![0; Rent::SIZE];
             let got_rent_buf_va = 0x200000000;
             let rent_id_va = 0x300000000;
             let rent_id = Rent::id().to_bytes();
@@ -4425,7 +4424,7 @@ mod tests {
                 rent_id_va,
                 got_rent_buf_va,
                 0,
-                sysvar_account_data_len(&Rent::default()) as u64,
+                Rent::SIZE as u64,
                 0,
             );
             assert_eq!(result.unwrap(), 0);
@@ -4443,7 +4442,7 @@ mod tests {
             let mut got_rewards_obj = create_filled_type::<EpochRewards>(true);
             let got_rewards_obj_va = 0x100000000;
 
-            let mut got_rewards_buf = vec![0; sysvar_account_data_len(&EpochRewards::default())];
+            let mut got_rewards_buf = vec![0; EpochRewards::SIZE];
             let got_rewards_buf_va = 0x200000000;
             let rewards_id_va = 0x300000000;
             let rewards_id = EpochRewards::id().to_bytes();
@@ -4491,7 +4490,7 @@ mod tests {
                 rewards_id_va,
                 got_rewards_buf_va,
                 0,
-                sysvar_account_data_len(&EpochRewards::default()) as u64,
+                EpochRewards::SIZE as u64,
                 0,
             );
             assert_eq!(result.unwrap(), 0);
@@ -4509,7 +4508,7 @@ mod tests {
             let mut got_restart_obj = LastRestartSlot::default();
             let got_restart_obj_va = 0x100000000;
 
-            let mut got_restart_buf = vec![0; sysvar_account_data_len(&LastRestartSlot::default())];
+            let mut got_restart_buf = vec![0; LastRestartSlot::SIZE];
             let got_restart_buf_va = 0x200000000;
             let restart_id_va = 0x300000000;
             let restart_id = LastRestartSlot::id().to_bytes();
@@ -4550,7 +4549,7 @@ mod tests {
                 restart_id_va,
                 got_restart_buf_va,
                 0,
-                sysvar_account_data_len(&LastRestartSlot::default()) as u64,
+                LastRestartSlot::SIZE as u64,
                 0,
             );
             assert_eq!(result.unwrap(), 0);
@@ -4589,7 +4588,7 @@ mod tests {
 
         let src_history = src_history;
 
-        let mut src_history_buf = vec![0; sysvar_account_data_len(&StakeHistory::default())];
+        let mut src_history_buf = vec![0; StakeHistory::SIZE];
         bincode::serialize_into(&mut src_history_buf, &src_history).unwrap();
 
         let transaction_accounts = vec![(
@@ -4599,7 +4598,7 @@ mod tests {
         with_mock_invoke_context!(invoke_context, transaction_context, transaction_accounts);
 
         {
-            let mut got_history_buf = vec![0; sysvar_account_data_len(&StakeHistory::default())];
+            let mut got_history_buf = vec![0; StakeHistory::SIZE];
             let got_history_buf_va = 0x100000000;
             let history_id_va = 0x200000000;
             let history_id = StakeHistory::id().to_bytes();
@@ -4624,7 +4623,7 @@ mod tests {
                 history_id_va,
                 got_history_buf_va,
                 0,
-                sysvar_account_data_len(&StakeHistory::default()) as u64,
+                StakeHistory::SIZE as u64,
                 0,
             );
             assert_eq!(result.unwrap(), 0);
@@ -4653,7 +4652,7 @@ mod tests {
 
         let src_hashes = src_hashes;
 
-        let mut src_hashes_buf = vec![0; sysvar_account_data_len(&SlotHashes::default())];
+        let mut src_hashes_buf = vec![0; SlotHashes::SIZE];
         bincode::serialize_into(&mut src_hashes_buf, &src_hashes).unwrap();
 
         let transaction_accounts = vec![(
@@ -4663,7 +4662,7 @@ mod tests {
         with_mock_invoke_context!(invoke_context, transaction_context, transaction_accounts);
 
         {
-            let mut got_hashes_buf = vec![0; sysvar_account_data_len(&SlotHashes::default())];
+            let mut got_hashes_buf = vec![0; SlotHashes::SIZE];
             let got_hashes_buf_va = 0x100000000;
             let hashes_id_va = 0x200000000;
             let hashes_id = SlotHashes::id().to_bytes();
@@ -4688,7 +4687,7 @@ mod tests {
                 hashes_id_va,
                 got_hashes_buf_va,
                 0,
-                sysvar_account_data_len(&SlotHashes::default()) as u64,
+                SlotHashes::SIZE as u64,
                 0,
             );
             assert_eq!(result.unwrap(), 0);
@@ -4712,16 +4711,16 @@ mod tests {
         let clock_id_va = 0x300000000;
         let clock_id = Clock::id().to_bytes();
 
-        let mut got_clock_buf_rw = vec![0; sysvar_account_data_len(&Clock::default())];
+        let mut got_clock_buf_rw = vec![0; Clock::SIZE];
         let got_clock_buf_rw_va = 0x400000000;
 
-        let got_clock_buf_ro = vec![0; sysvar_account_data_len(&Clock::default())];
+        let got_clock_buf_ro = vec![0; Clock::SIZE];
         let got_clock_buf_ro_va = 0x500000000;
 
         let access_violation_err =
             std::mem::discriminant(&EbpfError::AccessViolation(AccessType::Load, 0, 0, ""));
 
-        let got_clock_empty = vec![0; sysvar_account_data_len(&Clock::default())];
+        let got_clock_empty = vec![0; Clock::SIZE];
 
         {
             // start without the clock sysvar because we expect to hit specific errors before loading it
@@ -4748,7 +4747,7 @@ mod tests {
                 clock_id_va + 1,
                 got_clock_buf_rw_va,
                 0,
-                sysvar_account_data_len(&Clock::default()) as u64,
+                Clock::SIZE as u64,
                 0,
             )
             .unwrap_err();
@@ -4765,7 +4764,7 @@ mod tests {
                 clock_id_va,
                 got_clock_buf_rw_va + 1,
                 0,
-                sysvar_account_data_len(&Clock::default()) as u64,
+                Clock::SIZE as u64,
                 0,
             )
             .unwrap_err();
@@ -4781,7 +4780,7 @@ mod tests {
                 clock_id_va,
                 got_clock_buf_ro_va,
                 0,
-                sysvar_account_data_len(&Clock::default()) as u64,
+                Clock::SIZE as u64,
                 0,
             )
             .unwrap_err();
@@ -4797,8 +4796,8 @@ mod tests {
                 &mut invoke_context,
                 clock_id_va,
                 got_clock_buf_rw_va,
-                u64::MAX - sysvar_account_data_len(&Clock::default()) as u64 / 2,
-                sysvar_account_data_len(&Clock::default()) as u64,
+                u64::MAX - Clock::SIZE as u64 / 2,
+                Clock::SIZE as u64,
                 0,
             )
             .unwrap_err();
@@ -4818,7 +4817,7 @@ mod tests {
                 clock_id_va,
                 got_clock_buf_rw_va,
                 0,
-                sysvar_account_data_len(&Clock::default()) as u64,
+                Clock::SIZE as u64,
                 0,
             )
             .unwrap();
@@ -4855,7 +4854,7 @@ mod tests {
                 clock_id_va,
                 got_clock_buf_rw_va,
                 1,
-                sysvar_account_data_len(&Clock::default()) as u64,
+                Clock::SIZE as u64,
                 0,
             )
             .unwrap();
@@ -4869,7 +4868,7 @@ mod tests {
                 clock_id_va,
                 got_clock_buf_rw_va,
                 0,
-                sysvar_account_data_len(&Clock::default()) as u64,
+                Clock::SIZE as u64,
                 0,
             )
             .unwrap();
